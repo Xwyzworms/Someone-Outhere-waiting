@@ -258,13 +258,19 @@ inference(y = weeks, data = nc, statistic = "mean", type = 'ci', null = 0,
 ```{r gained-mature-ht}
 # type your code for the Exercise here, and Knit
 inference(data = nc , y = weight , x = mature , 
-          )
+          type = "ht" , null = 0 , 
+          alternative = "twosided" ,
+          method = "theoretical" ,statistic = "mean" )
 ```
 
 7. Now, a non-inference task: Determine the age cutoff for younger and mature 
 mothers. Use a method of your choice, and explain how your method works.
 ```{r cutoff-mature}
 # type your code for Question 7 here, and Knit
+min(nc[nc$mature == "mature mom" , "mage"])
+
+nc %>% group_by(mature) %>%
+        summarise(minage = min(mage) , maxage = max(mage))
 
 ```
 

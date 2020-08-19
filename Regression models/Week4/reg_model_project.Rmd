@@ -1,0 +1,221 @@
+---
+title: "Modeling and prediction for movies"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(statsr)
+library(GGally)
+library(gridExtra)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `movies`. Delete this note when before you submit 
+your work. 
+
+```{r load-data}
+setwd("D:\\CourseraCourses\\StatisticsWithR\\Regression models\\Week4")
+load("movies.Rdata")
+head(movies)
+```
+
+
+
+* * *
+
+## Part 1: Data
+
+## Introduction : About data 
+ Taken From IMBD, the data set is comprised of 651 randomly sampled movies produced and released before 2016. 
+
+
+* * *
+
+## Part 2: Research question
+
+1. What predictors is significant for predicting IMDB Rating ?
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+```{r}
+## Subset The Movies 
+names(movies)
+desiredPredictors <- c("title_type","runtime","mpaa_rating","imdb_num_votes","critics_score","audience_score","genre","imdb_rating")
+
+subsetMovies <-as.data.frame( movies[, desiredPredictors])
+subsetMovies <- na.omit(subsetMovies)
+
+head(subsetMovies)
+
+# let's See Their Correlation for each numerical predictors
+numericPredictors <- c("imdb_rating","runtime", "imdb_num_votes", "critics_score", "audience_score")
+
+GGally::ggpairs(data = subsetMovies,columns = numericPredictors )
+
+
+
+```
+
+
+Seems Like Audience Score and Critics Score are highly correlated , m going to drop critics score since audience_Score is highly correlated with imdb_rating.
+
+```{r}
+
+# lets see the categorical variable then
+
+str(subsetMovies) # We will fit it with all numerical data 
+
+numericPredictors <- c("runtime", "imdb_num_votes", "critics_score", "audience_score")
+categoricalPredictor <- c("title_type", "mpaa_rating", "genre")
+
+
+
+
+index <- 1
+ggplot_list <- list() # Creating Vector for keeping the plotted Objs
+for (categoricalvarX in categoricalPredictor){
+   if(categoricalvarX == "title_type"){
+        print(categoricalvarX)
+        FirstPlot <-   ggplot(data = subsetMovies,aes(y = imdb_rating,
+                                                x = subsetMovies[, categoricalPredictor[1]]))+
+                      ggplot2::geom_boxplot(aes(fill = subsetMovies[, categoricalPredictor[2]] ))+
+                      ggplot2::labs(x = categoricalvarX )+
+                      ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
+                      ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[2])))+
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm")) 
+        
+        SecondPlot <- ggplot(data = subsetMovies , aes(y = imdb_rating,
+                                                       x = subsetMovies[, categoricalPredictor[1]]))+
+                      ggplot2::geom_boxplot(aes(fill = subsetMovies[, categoricalPredictor[3]] ))+
+                      ggplot2::labs(x = categoricalvarX) + 
+                      ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
+                      ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[3])))+
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))
+                                 
+        ggplot_list[[index]] <- FirstPlot
+        ggplot_list[[index + 1]] <- SecondPlot
+        print(index)
+        index = index + 2
+   }else if(categoricalvarX == "mpaa_rating"){
+        print(categoricalvarX)   
+        FirstPlot <-  ggplot(data = subsetMovies,aes(y = imdb_rating,
+                                                x = subsetMovies[, categoricalPredictor[2]]))+
+                      ggplot2::geom_boxplot(aes(fill = subsetMovies[, categoricalPredictor[1]] ))+
+                      ggplot2::labs(x = categoricalvarX ) + 
+                      ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
+                      ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[1])))+
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))
+        
+        SecondPlot <- ggplot(data = subsetMovies , aes(y = imdb_rating,
+                                                       x = subsetMovies[, categoricalPredictor[2]]))+
+                      ggplot2::geom_boxplot(aes(fill = subsetMovies[, categoricalPredictor[3]] ))+
+                      ggplot2::labs(x = categoricalvarX) +
+                      ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
+                      ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[3])))+
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))
+                                 
+        ggplot_list[[index]] <- FirstPlot
+        ggplot_list[[index + 1]] <- SecondPlot   
+        print(index)
+        index = index + 2   
+   }
+    else if (categoricalvarX == "genre"){
+        print(categoricalvarX)    
+        FirstPlot <-  ggplot(data = subsetMovies,aes(y = imdb_rating,
+                                                x = subsetMovies[, categoricalPredictor[3]]))+
+                      ggplot2::geom_boxplot(aes(fill = subsetMovies[, categoricalPredictor[1]] ))+
+                      ggplot2::labs(x = categoricalvarX )+
+                      ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
+                      ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[1])))+
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))
+        
+        SecondPlot <- ggplot(data = subsetMovies , aes(y = imdb_rating,
+                                                       x = subsetMovies[, categoricalPredictor[3]]))+
+                      ggplot2::geom_boxplot(aes(fill = subsetMovies[, categoricalPredictor[2]] ))+
+                      ggplot2::labs(x = categoricalvarX)+
+                      ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
+                      ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[2])))+
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))           
+        ggplot_list[[index]] <- FirstPlot
+        ggplot_list[[index + 1]] <- SecondPlot   
+        print(index)
+        index = index + 2           
+                
+                
+        }
+}
+categoricalvarX <- "title_type"
+rm(categoricalvarX)
+lol <- eval( substitute(ggplot(data = subsetMovies , aes(y = imdb_rating,
+                                                       x = subsetMovies[, categoricalvarX]))+
+                      ggplot2::geom_boxplot(aes(fill = subsetMovies[, categoricalPredictor[2]] ))+
+                      ggplot2::labs(x = categoricalvarX)+
+                      ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
+                      ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[2])))+
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))))
+print(lol)
+
+plot(ggplot_list[[1]]) # Plot the x= title type by Mpaa_Rating
+
+#plot(ggplot_list[[2]])
+
+```
+
+```{r}
+plot(ggplot_list[[2]])
+```
+```{r}
+
+# Plot the x = mpaa_rating by title type and genre
+plot(ggplot_list[[3]])
+
+```
+```{r}
+
+plot(ggplot_list[[4]])
+
+```
+```{r}
+
+plot(ggplot_list[[5]])
+
+```
+```{r}
+plot(ggplot_list[[6]])
+
+
+```
+* * *
+
+## Part 4: Modeling
+
+NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
+button above. Make sure that your code is visible in the project you submit. 
+Delete this note when before you submit your work.
+
+* * *
+
+## Part 5: Prediction
+
+NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
+button above. Make sure that your code is visible in the project you submit. 
+Delete this note when before you submit your work.
+
+* * *
+
+## Part 6: Conclusion
+

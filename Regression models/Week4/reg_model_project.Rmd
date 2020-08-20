@@ -1,10 +1,6 @@
 ---
 title: "Modeling and prediction for movies"
-output: 
-  html_document: 
-    fig_height: 4
-    highlight: pygments
-    theme: spacelab
+output: md_document
 ---
 
 ## Setup
@@ -45,7 +41,7 @@ head(movies)
 
 ## Part 2: Research question
 
-1. What predictors is significant for predicting IMDB Rating ?
+1. What's the best for predicting IMDB Rating ?
 
 * * *
 
@@ -96,7 +92,8 @@ for (categoricalvarX in categoricalPredictor){
                       ggplot2::labs(x = categoricalvarX )+
                       ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
                       ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[2])))+
-                      ggplot2::theme(legend.key.size = unit(0.5, "cm")) 
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm")) +
+                      ggplot2::scale_y_continuous(limits = c(1, 10))
         
         SecondPlot <- ggplot(data = subsetMovies , aes(y = imdb_rating,
                                                        x = subsetMovies[, categoricalPredictor[1]]))+
@@ -104,7 +101,8 @@ for (categoricalvarX in categoricalPredictor){
                       ggplot2::labs(x = categoricalvarX) + 
                       ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
                       ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[3])))+
-                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))+
+                      ggplot2::scale_y_continuous(limits = c(1, 10))
                                  
         ggplot_list[[index]] <- FirstPlot
         ggplot_list[[index + 1]] <- SecondPlot
@@ -118,7 +116,8 @@ for (categoricalvarX in categoricalPredictor){
                       ggplot2::labs(x = categoricalvarX ) + 
                       ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
                       ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[1])))+
-                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))+
+                      ggplot2::scale_y_continuous(limits = c(1, 10))
         
         SecondPlot <- ggplot(data = subsetMovies , aes(y = imdb_rating,
                                                        x = subsetMovies[, categoricalPredictor[2]]))+
@@ -126,7 +125,8 @@ for (categoricalvarX in categoricalPredictor){
                       ggplot2::labs(x = categoricalvarX) +
                       ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
                       ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[3])))+
-                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))+
+                      ggplot2::scale_y_continuous(limits = c(1, 10))
                                  
         ggplot_list[[index]] <- FirstPlot
         ggplot_list[[index + 1]] <- SecondPlot   
@@ -141,7 +141,8 @@ for (categoricalvarX in categoricalPredictor){
                       ggplot2::labs(x = categoricalvarX )+
                       ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
                       ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[1])))+
-                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))+
+                      ggplot2::scale_y_continuous(limits = c(1, 10))
         
         SecondPlot <- ggplot(data = subsetMovies , aes(y = imdb_rating,
                                                        x = subsetMovies[, categoricalPredictor[3]]))+
@@ -149,7 +150,8 @@ for (categoricalvarX in categoricalPredictor){
                       ggplot2::labs(x = categoricalvarX)+
                       ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
                       ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[2])))+
-                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))           
+                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))  +
+                      ggplot2::scale_y_continuous(limits = c(1, 10))
         ggplot_list[[index]] <- FirstPlot
         ggplot_list[[index + 1]] <- SecondPlot   
         print(index)
@@ -158,64 +160,203 @@ for (categoricalvarX in categoricalPredictor){
                 
         }
 }
-categoricalvarX <- "title_type"
-rm(categoricalvarX)
-lol <- eval( substitute(ggplot(data = subsetMovies , aes(y = imdb_rating,
-                                                       x = subsetMovies[, categoricalvarX]))+
-                      ggplot2::geom_boxplot(aes(fill = subsetMovies[, categoricalPredictor[2]] ))+
-                      ggplot2::labs(x = categoricalvarX)+
-                      ggplot2::theme(axis.text.x = element_text(angle = 90)) + 
-                      ggplot2::guides(fill = guide_legend(title = toupper(categoricalPredictor[2])))+
-                      ggplot2::theme(legend.key.size = unit(0.5, "cm"))))
-print(lol)
+?scale_y_continuous
 
 plot(ggplot_list[[1]]) # Plot the x= title type by Mpaa_Rating
 
 #plot(ggplot_list[[2]])
 
 ```
+For documentary films , we see that imdb rating most likely have more variability at 70 to 80 + by all mpaa_rating
+
+for feature films, wee see that IMDB rating most likely have more variability at5.5 to roughly around 70 and we have outliers for majority of mpaa_rating
+
+For TV Movie films, we only have 2 MPAA_RATING only R and Unrated both have imdb score below 70 for R and below 60 most likely for Unrated
+
 
 ```{r}
 plot(ggplot_list[[2]])
 ```
+for Documentary we only have 3 genres ,2 genres have rating scores above 7 and 1 below 7, no outliers
+
+for Feature film i guess the variability score is around 5 to 7.5 on average for all genres
+
+for tv mvoie i guess we only have drama genre with majority have score 6.5 to 7.5 on average
+
+
 ```{r}
 
 # Plot the x = mpaa_rating by title type and genre
 plot(ggplot_list[[3]])
 
 ```
+PG-13 "Parents Strongly Cautioned. Some Material May Be Inappropriate For Children Under 13."
+PG: "Parental Guidance Suggested. Some Material May Not Be Suitable For Children."
+G: "General Audiences-All Ages Admitted."
+R: "Restricted, Under 17 Requires Accompanying Parent Or Adult Guardian."
+NC-17: "No One 17 And Under Admitted."
+
+for G , we have documentary and Feature Film with greatly variability score between 6 to around 7.5 
+
+for Nc-17 we only have 1 type,feature film and the score variablity is around 6.5 to below 7.0
+
+for pg we only have 2 types , 1 have higher score variability aka above 7.0 the documentary film and 1 below 7.0 the feature film.
+
+for pg-13 we have highly score variability for the documentary type and also moderate score variability for feature film
+
+for the R documentary seems have higher score variablity followed by tv mvoie and feature film on average
+
+
 ```{r}
 
 plot(ggplot_list[[4]])
 
 ```
+We can see here that genres is arbitary for PG-Pg13 and R  ,but heres the summary , im to lazy to write to conclusion ,sorry ..
+```{r}
+table(subsetMovies$genre,subsetMovies$mpaa_rating)
+
+```
+
 ```{r}
 
 plot(ggplot_list[[5]])
 
 ```
+
 ```{r}
 plot(ggplot_list[[6]])
 
 
 ```
+# Seems The chosen categorical variables the title type have a great score for predicting the imdb score, from the variability and Genres also the great one, since we always have documentary with highest score variability, probably because of the lack of dataset contain film about documentaries. I guess for this those 2 could be the best categorical variable compare with mpaa_rating .
+
 * * *
 
 ## Part 4: Modeling
 
-NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
-button above. Make sure that your code is visible in the project you submit. 
-Delete this note when before you submit your work.
+```{r}
+names(subsetMovies)
+modelLinRegression <- lm(formula = imdb_rating ~ runtime + imdb_num_votes + audience_score +
+                                    genre  + title_type ,data = subsetMovies)
+summary(modelLinRegression)
+
+```
+i m not going to really statistics when interpreting a slope , here's what i got,going to interpret the categorical not numeric because those obvious to interpret
+
+so the base imdb score for all films/movies/documentaries , get 3.5 imdb score on average given all equal 0
+
+if some movies/films/documentaries out and have the genre Documentary as an example, it would add score 2.6 on average for imdb score .
+REMEMBER : you're trying to make story with data not show off your statistic skill , make yourself explanation ez to understand to majority of audience
+
+lets try to know how much variability is explained by our model
+```{r}
+AnovaResultLinReg <- anova(modelLinRegression)
+# 6 for residuals
+paste("So Here's the percentage of the data that not explained by our model : ", sqrt(AnovaResultLinReg$`Sum Sq`[6]) ,"%" )
+
+AnovaResultLinReg
+# 
+```
+Not Bad For first attempt :D
+
+Let's Diagnostics the Model
+
+```{r}
+# 1. Linear Relationship between predictors and y
+TotalObservation <-1 : nrow(subsetMovies)
+
+modelLinRegression$residuals
+ggplot2::ggplot(data = modelLinRegression ,aes(x = TotalObservation ,y = .resid))+
+  ggplot2::geom_point()+
+  ggplot2::geom_hline(yintercept =  0 , col = "red" , linetype = "dashed")
+plot(TotalObservation, modelLinRegression$residuals )
+
+```
+Seems yep most observation lies around 0 , which we can say this diagnostics is clear to go
+
+Let's Check the normal Distribution of this guy residuals
+```{r}
+# 2. Nearly Normal residuals
+histogram <- ggplot2::ggplot(data = modelLinRegression , aes(x = .resid))+
+  ggplot2::geom_histogram(aes(y =..density..),fill= "orange",col = 'black',bins = 100) + 
+  ggplot2::geom_density(col = "blue")
+#qqplotplot <- 
+ggplotQQ <- function(lm){
+  # This Function Purpose
+  # extract standardized residuals from the fit
+  # and Create the qqplot with its line
+    dfModel <- data.frame(std.resid = rstandard(model = lm))
+    
+    yAxis <- quantile(dfModel$std.resid,p = c(0.25,0.75))
+    xAxis <- qnorm(p= c(0.25,0.75))
+    slope <- diff(yAxis) / diff(xAxis)
+    intercept <- yAxis[1] - slope * xAxis[1]
+  
+    plotted <- ggplot2::ggplot(data = dfModel, aes(sample = std.resid))  +stat_qq(shape = 1 ,size = 3)+
+      geom_abline(slope = slope , intercept = intercept, linetype = "dashed",col= 'red') 
+    return (plotted)
+    
+    
+}
+qqplotline <- ggplotQQ(modelLinRegression)
+
+grid.arrange(histogram, qqplotline , nrow =1 ,ncol = 2 ,widths = c(4,2) )
+
+```
+below there it's because outliers but overall this is looks like normal shape :D
+
+lets check constant variability
+```{r}
+ResidAndFittedPlt <- ggplot2::ggplot(data = modelLinRegression,aes(x = .fitted , y = .resid))+
+  geom_point() +
+  geom_hline(yintercept = 0, col = "red" , linetype ='dashed')
+
+AbsResidAndFittedPlt <- ggplot2::ggplot(data = modelLinRegression,aes(x = .fitted , y = abs(.resid)))+
+  geom_point() +
+  geom_hline(yintercept = 0, col = "red" , linetype ='dashed')
+
+
+grid.arrange(ResidAndFittedPlt , AbsResidAndFittedPlt , ncol = 2,nrow = 1 , widths = c(4,2))
+
+```
+I guess we can say this diagnostics is fine to , because fitted and resid most likely lies around 0 , remember this is lin reg, we have this result is a good enough , wecan improve it to , with polynomial model or doing randomforest
+
+This is not time series , and the data collected randomly so we can assume that this data is independent residuals .
+
 
 * * *
 
 ## Part 5: Prediction
 
-NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
-button above. Make sure that your code is visible in the project you submit. 
-Delete this note when before you submit your work.
+```{r}
+#lets try to see the predicted
+
+
+pred.int <- predict(modelLinRegression , interval = "prediction")
+
+ModifiedSubset <- cbind(subsetMovies[, c("title_type","runtime","imdb_num_votes", "audience_score", "genre", "imdb_rating")], pred.int)
+
+head(ModifiedSubset)
+
+```
+# Well Not bad ,really not bad for this we not really far with the actual answer .
+
+lets See the prediction and confidence interval thershold
+
+```{r}
+# just going to plot 1 of numerical variable
+  ggplot2::ggplot(data = ModifiedSubset , aes(y = imdb_rating , x = fit))+
+  geom_point()+
+  geom_smooth( method = "lm" ) + 
+  ggplot2::geom_line(aes(y = lwr),col = "red", linetype = "dashed")+
+  ggplot2::geom_line(aes(y = upr),col = "red", linetype = "dashed")
+
+```
 
 * * *
 
 ## Part 6: Conclusion
+
+So my conclusion,our Model is not bad at all ,we found that rouhgly 78 percent our model correctly predict given variables , and the prediction interval is quitely larger , and also we know that in this model we used only 7 variables and we come with a great r adjusted squared and loss the diagonostics test, so as far as i can tell the best predictors to predict this imdb_rating is : "title_type","runtime","imdb_num_votes" ,"audience_score", "genre" ,"imdb_rating" 
 
